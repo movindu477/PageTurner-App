@@ -5,10 +5,10 @@ class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
 
   @override
-  _RegistrationPageState createState() => _RegistrationPageState();
+  RegistrationPageState createState() => RegistrationPageState();
 }
 
-class _RegistrationPageState extends State<RegistrationPage> {
+class RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
 
   String? _name;
@@ -35,7 +35,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             padding: const EdgeInsets.all(16.0),
             child: Card(
               elevation: 10, // Add shadow (higher value = larger shadow)
-              shadowColor: Colors.deepPurple.withOpacity(0.3), // Custom shadow color
+              shadowColor: Colors.deepPurple.withAlpha(255), // Custom shadow color
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15), // Rounded corners
               ),
