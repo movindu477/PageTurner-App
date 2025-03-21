@@ -1,31 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dashboard_page.dart';
-import 'registration_page.dart';
-import 'forgot_password_page.dart';  // Import the ForgotPasswordPage
+import 'package:http/http.dart' as http;
+import 'login_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ForgottenPasswordPage extends StatefulWidget {
+  const ForgottenPasswordPage({super.key});
 
   @override
-  LoginPageState createState() => LoginPageState();
+  _ForgottenPasswordPageState createState() => _ForgottenPasswordPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class _ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  String? _email, _password;
+  String? _email, _newPassword, _confirmPassword;
   bool _isLoading = false;
 
-  Future<void> _loginUser() async {
+  Future<void> _resetPassword() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      
+      if (_newPassword != _confirmPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Passwords do not match")),
+        );
+        return;
+      }
+
       setState(() => _isLoading = true);
 
+      // Replace with your API URL for password reset
       final response = await http.post(
-        Uri.parse("http://192.168.11.1/flutter_API/login.php"),  // Replace with your API URL
+        Uri.parse("http://10.0.2.2/flutter_API/reset_password.php"), 
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"email": _email, "password": _password}),
+        body: jsonEncode({
+          "email": _email,
+          "newPassword": _newPassword,
+        }),
       );
 
       setState(() => _isLoading = false);
@@ -33,13 +43,13 @@ class LoginPageState extends State<LoginPage> {
 
       if (responseData['status'] == "success") {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login Successful")),
+          const SnackBar(content: Text("Password reset successful")),
         );
-        
-        // Navigate to Dashboard
+
+        // Navigate back to login page after success
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const DashboardPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -54,7 +64,7 @@ class LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.deepPurpleAccent,
       appBar: AppBar(
-        title: const Text("Login"),
+        title: const Text("Reset Password"),
         centerTitle: true,
       ),
       body: Center(
@@ -71,7 +81,7 @@ class LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text("Login", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.deepPurple)),
+                      const Text("Reset Password", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.deepPurple)),
                       const SizedBox(height: 20),
                       TextFormField(
                         decoration: const InputDecoration(labelText: "Email", border: OutlineInputBorder()),
@@ -81,16 +91,23 @@ class LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Password", border: OutlineInputBorder()),
+                        decoration: const InputDecoration(labelText: "New Password", border: OutlineInputBorder()),
                         obscureText: true,
                         validator: (value) => (value!.length < 6) ? "Password must be at least 6 characters" : null,
-                        onSaved: (value) => _password = value,
+                        onSaved: (value) => _newPassword = value,
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        decoration: const InputDecoration(labelText: "Confirm Password", border: OutlineInputBorder()),
+                        obscureText: true,
+                        validator: (value) => (value!.length < 6) ? "Password must be at least 6 characters" : null,
+                        onSaved: (value) => _confirmPassword = value,
                       ),
                       const SizedBox(height: 20),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _isLoading ? null : _loginUser,
+                          onPressed: _isLoading ? null : _resetPassword,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.deepPurple,
                             foregroundColor: Colors.white,
@@ -99,24 +116,8 @@ class LoginPageState extends State<LoginPage> {
                           ),
                           child: _isLoading
                               ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text("Login", style: TextStyle(fontSize: 18)),
+                              : const Text("Submit", style: TextStyle(fontSize: 18)),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextButton(
-                        onPressed: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const RegistrationPage()),
-                        ),
-                        child: const Text("Don't have an account? Register", style: TextStyle(color: Colors.deepPurple)),
-                      ),
-                      const SizedBox(height: 20),
-                      TextButton(
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ForgottenPasswordPage()),
-                        ),
-                        child: const Text("Forgotten Password?", style: TextStyle(color: Colors.deepPurple)),
                       ),
                     ],
                   ),
