@@ -1,120 +1,116 @@
 import 'package:flutter/material.dart';
-import 'registration_page.dart'; // Import the RegistrationPage
-import 'dashboard_page.dart'; // Import the DashboardPage
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dashboard_page.dart';
+import 'registration_page.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  LoginPageState createState() => LoginPageState();
+}
+
+class LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  String? _email, _password;
+  bool _isLoading = false;
+
+  Future<void> _loginUser() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      setState(() => _isLoading = true);
+
+      final response = await http.post(
+        Uri.parse("http://192.168.11.1/flutter_API/login.php"),  // Replace with your API URL
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": _email, "password": _password}),
+      );
+
+      setState(() => _isLoading = false);
+      final responseData = jsonDecode(response.body);
+
+      if (responseData['status'] == "success") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login Successful")),
+        );
+        
+        // Navigate to Dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardPage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.deepPurpleAccent,
       appBar: AppBar(
-        leading: null,
+        title: const Text("Login"),
         centerTitle: true,
-        automaticallyImplyLeading: false,
-        title: const Text("Login Page"),
       ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Card(
-              elevation: 10, // Add shadow
-              shadowColor: Colors.deepPurple.withOpacity(0.3), // Custom shadow color
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15), // Rounded corners
-              ),
+              elevation: 10,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min, // Minimize the column size
-                  children: [
-                    const Text(
-                      "Login",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text("Login", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.deepPurple)),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        decoration: const InputDecoration(labelText: "Email", border: OutlineInputBorder()),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) => (value!.isEmpty || !value.contains("@")) ? "Enter a valid email" : null,
+                        onSaved: (value) => _email = value,
                       ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Email Field
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: "Email",
-                        border: OutlineInputBorder(), // Added border
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        decoration: const InputDecoration(labelText: "Password", border: OutlineInputBorder()),
+                        obscureText: true,
+                        validator: (value) => (value!.length < 6) ? "Password must be at least 6 characters" : null,
+                        onSaved: (value) => _password = value,
                       ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty || !value.contains("@")) {
-                          return "Enter a valid email";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Password Field
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: "Password",
-                        border: OutlineInputBorder(), // Added border
-                      ),
-                      obscureText: true, // Hide password
-                      validator: (value) {
-                        if (value == null || value.length < 6) {
-                          return "Password must be at least 6 characters";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Login Button
-                    SizedBox(
-                      width: double.infinity, // Full-width button
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Handle login logic
-                          // For demonstration, we will directly navigate to the DashboardPage
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const DashboardPage()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple, // Button background color
-                          foregroundColor: Colors.white, // Text color
-                          padding: const EdgeInsets.symmetric(vertical: 16), // Button height
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10), // Rounded corners
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _loginUser,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepPurple,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           ),
-                        ),
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(fontSize: 18),
+                          child: _isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text("Login", style: TextStyle(fontSize: 18)),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // "Don't have an account? Register" Text
-                    TextButton(
-                      onPressed: () {
-                        // Navigate to RegistrationPage
-                        Navigator.pushReplacement(
+                      const SizedBox(height: 20),
+                      TextButton(
+                        onPressed: () => Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => const RegistrationPage()),
-                        );
-                      },
-                      child: const Text(
-                        "Don't have an account? Register",
-                        style: TextStyle(color: Colors.deepPurple),
+                        ),
+                        child: const Text("Don't have an account? Register", style: TextStyle(color: Colors.deepPurple)),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
