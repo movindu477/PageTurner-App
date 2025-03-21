@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart'; // Import the LoginPage
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'login_page.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -10,140 +12,105 @@ class RegistrationPage extends StatefulWidget {
 
 class RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
+  String? _name, _email, _password;
+  bool _isLoading = false;
 
-  String? _name;
-  String? _email;
-  String? _password;
-  final bool _isPasswordVisible = false; // For password visibility toggle
+  Future<void> _registerUser() async {
+  if (_formKey.currentState!.validate()) {
+    _formKey.currentState!.save();
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await http.post(
+        Uri.parse("http://192.168.11.1/flutter_API/register.php"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"name": _name, "email": _email, "password": _password}),
+      );
+
+      setState(() => _isLoading = false);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == "success") {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Registered Successfully")));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Server error: ${response.statusCode}")));
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.deepPurpleAccent,
       appBar: AppBar(
-        iconTheme: IconThemeData(),
-        title: const Text("Welcome To Register Page"),
+        title: const Text("Register"),
         centerTitle: true,
-        leading: null,
-        automaticallyImplyLeading: false, // Center the title
       ),
       body: Center(
-        // Center the form on the screen
         child: SingleChildScrollView(
-          // Make the form scrollable
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Card(
-              elevation: 10, // Add shadow (higher value = larger shadow)
-              shadowColor: Colors.deepPurple.withAlpha(255), // Custom shadow color
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15), // Rounded corners
-              ),
+              elevation: 10,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    mainAxisSize: MainAxisSize.min, // Minimize the column size
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(
-                        'assets/images/book.png',
-                        width: 100,
-                        height: 100,
-                      ),
-                      // Full Name Field
+                      Image.asset('assets/images/book.png', width: 100, height: 100),
                       TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: "Full Name",
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.fromLTRB(10, 20, 15, 15) // gap
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Please enter your name";
-                          }
-                          return null;
-                        },
+                        decoration: const InputDecoration(labelText: "Full Name", border: OutlineInputBorder()),
+                        validator: (value) => value!.isEmpty ? "Enter your name" : null,
                         onSaved: (value) => _name = value,
                       ),
-                      const SizedBox(height: 20), // Added spacing
-
-                      // Email Field
+                      const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: "Email",
-                          border: OutlineInputBorder(), // Added border
-                        ),
+                        decoration: const InputDecoration(labelText: "Email", border: OutlineInputBorder()),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.isEmpty || !value.contains("@")) {
-                            return "Enter a valid email";
-                          }
-                          return null;
-                        },
+                        validator: (value) => (value!.isEmpty || !value.contains("@")) ? "Enter valid email" : null,
                         onSaved: (value) => _email = value,
                       ),
-                      const SizedBox(height: 20), // Added spacing
-
-                      // Password Field
+                      const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: "Password",
-                          border: OutlineInputBorder(), // Added border
-                        ),
-                        obscureText: !_isPasswordVisible, // Toggle obscureText
-                        validator: (value) {
-                          if (value == null || value.length < 6) {
-                            return "Password must be at least 6 characters";
-                          }
-                          return null;
-                        },
+                        decoration: const InputDecoration(labelText: "Password", border: OutlineInputBorder()),
+                        obscureText: true,
+                        validator: (value) => (value!.length < 6) ? "Password must be 6+ chars" : null,
                         onSaved: (value) => _password = value,
                       ),
-                      const SizedBox(height: 20), // Added spacing
-
-                      // Register Button
+                      const SizedBox(height: 20),
                       SizedBox(
-                        width: double.infinity, // Full-width button
+                        width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              _formKey.currentState!.save();
-                              // Optionally, navigate to another page after registration
-                              Future.delayed(const Duration(seconds: 2), () {
-                                Navigator.pop(context); // Go back to the previous screen
-                              });
-                            }
-                          },
+                          onPressed: _isLoading ? null : _registerUser,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple, // Button background color
-                            foregroundColor: Colors.white, // Text color
-                            padding: const EdgeInsets.symmetric(vertical: 16), // Button height
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10), // Rounded corners
-                            ),
+                            backgroundColor: Colors.deepPurple,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           ),
-                          child: const Text(
-                            "Register",
-                            style: TextStyle(fontSize: 18),
-                          ),
+                          child: _isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text("Register", style: TextStyle(fontSize: 18)),
                         ),
                       ),
                       const SizedBox(height: 20),
-
-                      // "Already have an account? Login" Text
                       TextButton(
-                        onPressed: () {
-                          // Navigate to LoginPage
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const LoginPage()),
-                          );
-                        },
-                        child: const Text(
-                          "Already have an account? Login",
-                          style: TextStyle(color: Colors.deepPurple),
-                        ),
+                        onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage())),
+                        child: const Text("Already have an account? Login", style: TextStyle(color: Colors.deepPurple)),
                       ),
                     ],
                   ),
