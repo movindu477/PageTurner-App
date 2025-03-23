@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AddYourBookPage extends StatefulWidget {
-  const AddYourBookPage({Key? key}) : super(key: key);
+  const AddYourBookPage({super.key});
 
   @override
   _AddYourBookPageState createState() => _AddYourBookPageState();

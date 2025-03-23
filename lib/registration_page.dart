@@ -14,47 +14,51 @@ class RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
   String? _name, _email, _password;
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   Future<void> _registerUser() async {
-  if (_formKey.currentState!.validate()) {
-    _formKey.currentState!.save();
-    setState(() => _isLoading = true);
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      setState(() => _isLoading = true);
 
-    try {
-      final response = await http.post(
-        Uri.parse("http://192.168.11.1/flutter_API/register.php"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"name": _name, "email": _email, "password": _password}),
-      );
+      try {
+        final response = await http.post(
+          Uri.parse("http://192.168.11.1/flutter_API/register.php"),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({"name": _name, "email": _email, "password": _password}),
+        );
 
-      setState(() => _isLoading = false);
+        setState(() => _isLoading = false);
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body);
 
-        if (responseData['status'] == "success") {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Registered Successfully")));
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+          if (responseData['status'] == "success") {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Registered Successfully")));
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => const LoginPage()));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(responseData['message'])));
+          }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(responseData['message'])));
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Server error: ${response.statusCode}")));
         }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Server error: ${response.statusCode}")));
+      } catch (e) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
       }
-    } catch (e) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.deepPurpleAccent,
       appBar: AppBar(
-        title: const Text("Register"),
+        title: const Text("Register Page"),
         centerTitle: true,
       ),
       body: Center(
@@ -86,10 +90,34 @@ class RegistrationPageState extends State<RegistrationPage> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Password", border: OutlineInputBorder()),
-                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
+                        ),
+                        obscureText: _obscurePassword,
                         validator: (value) => (value!.length < 6) ? "Password must be 6+ chars" : null,
                         onSaved: (value) => _password = value,
+                      ),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: !_obscurePassword,
+                            onChanged: (value) {
+                              setState(() {
+                                _obscurePassword = !value!;
+                              });
+                            },
+                          ),
+                          const Text("Show Password"),
+                        ],
                       ),
                       const SizedBox(height: 20),
                       SizedBox(
@@ -109,7 +137,8 @@ class RegistrationPageState extends State<RegistrationPage> {
                       ),
                       const SizedBox(height: 20),
                       TextButton(
-                        onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage())),
+                        onPressed: () => Navigator.pushReplacement(
+                            context, MaterialPageRoute(builder: (context) => const LoginPage())),
                         child: const Text("Already have an account? Login", style: TextStyle(color: Colors.deepPurple)),
                       ),
                     ],

@@ -16,6 +16,7 @@ class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String? _email, _password;
   bool _isLoading = false;
+  bool _obscurePassword = true;  // Variable to control password visibility
 
   Future<void> _loginUser() async {
     if (_formKey.currentState!.validate()) {
@@ -82,9 +83,24 @@ class LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 20),
                       TextFormField(
                         decoration: const InputDecoration(labelText: "Password", border: OutlineInputBorder()),
-                        obscureText: true,
+                        obscureText: _obscurePassword,
                         validator: (value) => (value!.length < 6) ? "Password must be at least 6 characters" : null,
                         onSaved: (value) => _password = value,
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Checkbox(
+                            value: !_obscurePassword,
+                            onChanged: (value) {
+                              setState(() {
+                                _obscurePassword = !value!;
+                              });
+                            },
+                          ),
+                          const Text("Show Password"),
+                        ],
                       ),
                       const SizedBox(height: 20),
                       SizedBox(
