@@ -40,7 +40,7 @@ class LoginPageState extends State<LoginPage> {
         // Navigate to Dashboard
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const DashboardPage()),
+          MaterialPageRoute(builder: (context) => DashboardPage()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
