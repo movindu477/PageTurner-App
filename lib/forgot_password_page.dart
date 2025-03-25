@@ -30,7 +30,7 @@ class _ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
 
       // Replace with your API URL for password reset
       final response = await http.post(
-        Uri.parse("http://192.168.11.1/flutter_API/reset_password.php"), // Change this to your backend API URL
+        Uri.parse("http://192.168.170.224/flutter_API/reset_password.php"), // Change this to your backend API URL
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "email": _email,
