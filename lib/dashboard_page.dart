@@ -1,9 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:page_turner_app/book_detail_page.dart';
 import 'login_page.dart'; // Assuming the login page is in the same directory
 import 'addyourbook_page.dart';// Assuming the Add Your Book page is in the same directory
 
+// Moved CustomSearchDelegate to top-level (outside of _DashboardPageState)
+class CustomSearchDelegate extends SearchDelegate<String> {
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, '');
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Center(
+      child: Text("Searching for: $query"),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return Center(
+      child: Text("Suggestions: $query"),
+    );
+  }
+}
+
 class DashboardPage extends StatefulWidget {
-  
   const DashboardPage({super.key});
 
   @override
@@ -32,7 +71,7 @@ class _DashboardPageState extends State<DashboardPage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.deepPurpleAccent, // Deep Purple Color
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
@@ -90,19 +129,19 @@ class _DashboardPageState extends State<DashboardPage> {
                 // Section: We Think You'll Enjoy
                 sectionTitle("We think you'll enjoy"),
                 buildHorizontalBookList([
-                  'assets/images/book1.jpg',
-                  'assets/images/book3.jpg',
-                  'assets/images/book4.jpg',
-                  'assets/images/book5.jpg',
+                  {'image': 'assets/images/book1.jpg', 'title': 'Book One'},
+                  {'image': 'assets/images/book3.jpg', 'title': 'Book Three'},
+                  {'image': 'assets/images/book4.jpg', 'title': 'Book Four'},
+                  {'image': 'assets/images/book5.jpg', 'title': 'Book Five'},
                 ]),
 
                 // Section: Your Next Read
                 sectionTitle("Your Next Read"),
                 buildHorizontalBookList([
-                  'assets/images/book6.jpg',
-                  'assets/images/book7.jpg',
-                  'assets/images/book8.jpg',
-                  'assets/images/book9.jpg',
+                  {'image': 'assets/images/book1.jpg', 'title': 'Book One'},
+                  {'image': 'assets/images/book3.jpg', 'title': 'Book Three'},
+                  {'image': 'assets/images/book4.jpg', 'title': 'Book Four'},
+                  {'image': 'assets/images/book5.jpg', 'title': 'Book Five'},
                 ]),
 
                 // Featured Story
@@ -124,10 +163,10 @@ class _DashboardPageState extends State<DashboardPage> {
                 // Section: Picked for You
                 sectionTitle("Picked For You"),
                 buildHorizontalBookList([
-                  'assets/images/book10.jpg',
-                  'assets/images/book12.jpg',
-                  'assets/images/book13.jpg',
-                  'assets/images/book14.jpg'
+                  {'image': 'assets/images/book1.jpg', 'title': 'Book One'},
+                  {'image': 'assets/images/book3.jpg', 'title': 'Book Three'},
+                  {'image': 'assets/images/book4.jpg', 'title': 'Book Four'},
+                  {'image': 'assets/images/book5.jpg', 'title': 'Book Five'},
                 ]),
 
                 // Downloadable Book Section
@@ -177,7 +216,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Profile
-                      CircleAvatar(
+                      const CircleAvatar(
                         radius: 40,
                         backgroundImage: AssetImage('assets/images/profile.jpg'),
                       ),
@@ -254,65 +293,36 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // Function to create horizontal book list with specific images
-  Widget buildHorizontalBookList(List<String> imgPaths) {
+  Widget buildHorizontalBookList(List<Map<String, String>> books) {
     return SizedBox(
       height: 140,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: imgPaths.map((imgPath) => bookItem(imgPath)).toList(),
+          children: books.map((book) => bookItem(book['image']!, book['title']!)).toList(),
         ),
       ),
     );
   }
 
   // Function to create individual book items
-  Widget bookItem(String imgPath) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.asset(imgPath, width: 100, fit: BoxFit.cover),
-      ),
-    );
-  }
-}
-
-// Custom Search Delegate for search functionality
-class CustomSearchDelegate extends SearchDelegate {
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, null);
+  Widget bookItem(String imgPath, String title) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BookDetailPage(bookImage: imgPath, bookTitle: title),
+          ),
+        );
       },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return Center(
-      child: Text("Searching for: $query"),
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return Center(
-      child: Text("Suggestions: $query"),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.asset(imgPath, width: 100, fit: BoxFit.cover),
+        ),
+      ),
     );
   }
 }

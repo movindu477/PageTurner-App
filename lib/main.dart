@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'registration_page.dart'; // Import the registration page
+import 'book_state.dart';
+import 'book_detail_page.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
