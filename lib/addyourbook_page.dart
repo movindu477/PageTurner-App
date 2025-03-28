@@ -14,8 +14,14 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
   final TextEditingController _descriptionController = TextEditingController();
   String? _selectedFile;
   String? _selectedImage;
-  List<String> _selectedSections = [];
-  final List<String> _sections = ["Romantic", "Fantasy", "Horror", "Trending", "Latest"];
+  final List<String> _selectedSections = [];
+  final List<String> _sections = [
+    "Romantic",
+    "Fantasy",
+    "Horror",
+    "Trending",
+    "Latest"
+  ];
 
   @override
   void dispose() {
@@ -25,7 +31,8 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
   }
 
   void _pickFile() async {
-    file_picker.FilePickerResult? result = await file_picker.FilePicker.platform.pickFiles();
+    file_picker.FilePickerResult? result =
+        await file_picker.FilePicker.platform.pickFiles();
     if (result != null) {
       setState(() {
         _selectedFile = result.files.single.name;
@@ -34,7 +41,8 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
   }
 
   void _pickImage() async {
-    file_picker.FilePickerResult? result = await file_picker.FilePicker.platform.pickFiles(type: file_picker.FileType.image);
+    file_picker.FilePickerResult? result = await file_picker.FilePicker.platform
+        .pickFiles(type: file_picker.FileType.image);
     if (result != null) {
       setState(() {
         _selectedImage = result.files.single.name;
@@ -65,7 +73,7 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
         ),
         backgroundColor: Colors.deepPurpleAccent,
       ),
-        body: Padding(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -84,13 +92,16 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                   ),
                   child: Center(
                     child: _selectedImage == null
-                        ? const Text("Tap to upload an image", style: TextStyle(color: Colors.black54))
-                        : Text(_selectedImage!, style: TextStyle(color: Colors.black87)),
+                        ? const Text("Tap to upload an image",
+                            style: TextStyle(color: Colors.black54))
+                        : Text(_selectedImage!,
+                            style: TextStyle(color: Colors.black87)),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text("Section", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text("Section",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Wrap(
                 children: _sections.map((section) {
                   return Row(
@@ -116,10 +127,12 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
               if (_selectedSections.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: Text("Selected: ${_selectedSections.join(", ")}", style: TextStyle(fontSize: 14, color: Colors.black87)),
+                  child: Text("Selected: ${_selectedSections.join(", ")}",
+                      style: TextStyle(fontSize: 14, color: Colors.black87)),
                 ),
               const SizedBox(height: 16),
-              const Text("Book Title", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text("Book Title",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(
@@ -134,7 +147,8 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                 },
               ),
               const SizedBox(height: 16),
-              const Text("Description", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text("Description",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 4,
@@ -154,16 +168,22 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                 onTap: _pickFile,
                 child: Row(
                   children: const [
-                    Icon(Icons.add_circle, size: 30, color: Colors.deepPurpleAccent),
+                    Icon(Icons.add_circle,
+                        size: 30, color: Colors.deepPurpleAccent),
                     SizedBox(width: 8),
-                    Text("Upload your document", style: TextStyle(fontSize: 16, color: Colors.deepPurpleAccent)),
+                    Text("Upload your document",
+                        style: TextStyle(
+                            fontSize: 16, color: Colors.deepPurpleAccent)),
                   ],
                 ),
               ),
               if (_selectedFile != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: Text("Selected file: $_selectedFile", style: TextStyle(fontSize: 14, color: const Color.fromARGB(255, 255, 255, 255))),
+                  child: Text("Selected file: $_selectedFile",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: const Color.fromARGB(255, 255, 255, 255))),
                 ),
               const SizedBox(height: 20),
               SizedBox(
@@ -174,7 +194,8 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                     backgroundColor: Colors.deepPurpleAccent,
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
-                  child: const Text("Publish", style: TextStyle(fontSize: 16, color: Colors.white)),
+                  child: const Text("Publish",
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
                 ),
               ),
             ],

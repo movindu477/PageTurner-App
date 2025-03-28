@@ -188,7 +188,8 @@ class _BookDetailPageState extends State<BookDetailPage> {
             // Display Book Description if available
             if (bookDescription.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Text(
                   bookDescription,
                   style: const TextStyle(fontSize: 16),
@@ -203,7 +204,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            ...reviews.map((review) => reviewBox(review)).toList(),
+            ...reviews.map((review) => reviewBox(review)),
           ],
         ),
       ),

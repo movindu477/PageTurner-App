@@ -18,7 +18,7 @@ class _ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
   Future<void> _resetPassword() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      
+
       if (_newPassword != _confirmPassword) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Passwords do not match")),
@@ -30,7 +30,8 @@ class _ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
 
       // Replace with your API URL for password reset
       final response = await http.post(
-        Uri.parse("http://192.168.1.5/flutter_API/reset_password.php"), // Change this to your backend API URL
+        Uri.parse(
+            "http://192.168.170.152/flutter_API/reset_password.php"), // Change this to your backend API URL
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "email": _email,
@@ -73,7 +74,8 @@ class _ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
             padding: const EdgeInsets.all(16.0),
             child: Card(
               elevation: 10,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Form(
@@ -81,26 +83,42 @@ class _ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text("Reset Password", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.deepPurple)),
+                      const Text("Reset Password",
+                          style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple)),
                       const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Email", border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                            labelText: "Email", border: OutlineInputBorder()),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) => (value!.isEmpty || !value.contains("@")) ? "Enter a valid email" : null,
+                        validator: (value) =>
+                            (value!.isEmpty || !value.contains("@"))
+                                ? "Enter a valid email"
+                                : null,
                         onSaved: (value) => _email = value,
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "New Password", border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                            labelText: "New Password",
+                            border: OutlineInputBorder()),
                         obscureText: true,
-                        validator: (value) => (value!.length < 6) ? "Password must be at least 6 characters" : null,
+                        validator: (value) => (value!.length < 6)
+                            ? "Password must be at least 6 characters"
+                            : null,
                         onSaved: (value) => _newPassword = value,
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Confirm Password", border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                            labelText: "Confirm Password",
+                            border: OutlineInputBorder()),
                         obscureText: true,
-                        validator: (value) => (value!.length < 6) ? "Password must be at least 6 characters" : null,
+                        validator: (value) => (value!.length < 6)
+                            ? "Password must be at least 6 characters"
+                            : null,
                         onSaved: (value) => _confirmPassword = value,
                       ),
                       const SizedBox(height: 20),
@@ -112,11 +130,14 @@ class _ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
                             backgroundColor: Colors.deepPurple,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
                           ),
                           child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text("Submit", style: TextStyle(fontSize: 18)),
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : const Text("Submit",
+                                  style: TextStyle(fontSize: 18)),
                         ),
                       ),
                     ],

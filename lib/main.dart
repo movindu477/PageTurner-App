@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'registration_page.dart'; // Import the registration page
-import 'book_state.dart';
-import 'book_detail_page.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -45,13 +42,15 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple, // Background color of the splash screen
+      backgroundColor:
+          Colors.deepPurple, // Background color of the splash screen
       body: Center(
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+          borderRadius:
+              BorderRadius.circular(10), // Adjust the radius as needed
           child: Image.asset(
             'assets/images/book.png', // Path to your image
             width: 150, // Adjust the size as needed

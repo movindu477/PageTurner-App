@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dashboard_page.dart';
 import 'registration_page.dart';
-import 'forgot_password_page.dart';  // Import the ForgotPasswordPage
+import 'forgot_password_page.dart'; // Import the ForgotPasswordPage
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,7 +16,7 @@ class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String? _email, _password;
   bool _isLoading = false;
-  bool _obscurePassword = true;  // Variable to control password visibility
+  bool _obscurePassword = true; // Variable to control password visibility
 
   Future<void> _loginUser() async {
     if (_formKey.currentState!.validate()) {
@@ -24,7 +24,8 @@ class LoginPageState extends State<LoginPage> {
       setState(() => _isLoading = true);
 
       final response = await http.post(
-        Uri.parse("http://192.168.1.5/flutter_API/login.php"),  // Replace with your API URL
+        Uri.parse(
+            "http://192.168.170.152/flutter_API/login.php"), // Replace with your API URL
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": _email, "password": _password}),
       );
@@ -36,7 +37,7 @@ class LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Login Successful")),
         );
-        
+
         // Navigate to Dashboard
         Navigator.pushReplacement(
           context,
@@ -64,7 +65,8 @@ class LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.all(16.0),
             child: Card(
               elevation: 10,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Form(
@@ -72,19 +74,31 @@ class LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text("Login", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.deepPurple)),
+                      const Text("Login",
+                          style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple)),
                       const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Email", border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                            labelText: "Email", border: OutlineInputBorder()),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) => (value!.isEmpty || !value.contains("@")) ? "Enter a valid email" : null,
+                        validator: (value) =>
+                            (value!.isEmpty || !value.contains("@"))
+                                ? "Enter a valid email"
+                                : null,
                         onSaved: (value) => _email = value,
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Password", border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                            labelText: "Password",
+                            border: OutlineInputBorder()),
                         obscureText: _obscurePassword,
-                        validator: (value) => (value!.length < 6) ? "Password must be at least 6 characters" : null,
+                        validator: (value) => (value!.length < 6)
+                            ? "Password must be at least 6 characters"
+                            : null,
                         onSaved: (value) => _password = value,
                       ),
                       const SizedBox(height: 10),
@@ -111,28 +125,36 @@ class LoginPageState extends State<LoginPage> {
                             backgroundColor: Colors.deepPurple,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
                           ),
                           child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text("Login", style: TextStyle(fontSize: 18)),
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : const Text("Login",
+                                  style: TextStyle(fontSize: 18)),
                         ),
                       ),
                       const SizedBox(height: 20),
                       TextButton(
                         onPressed: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => const RegistrationPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const RegistrationPage()),
                         ),
-                        child: const Text("Don't have an account? Register", style: TextStyle(color: Colors.deepPurple)),
+                        child: const Text("Don't have an account? Register",
+                            style: TextStyle(color: Colors.deepPurple)),
                       ),
                       const SizedBox(height: 20),
                       TextButton(
                         onPressed: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const ForgottenPasswordPage()),
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const ForgottenPasswordPage()),
                         ),
-                        child: const Text("Forgotten Password?", style: TextStyle(color: Colors.deepPurple)),
+                        child: const Text("Forgotten Password?",
+                            style: TextStyle(color: Colors.deepPurple)),
                       ),
                     ],
                   ),

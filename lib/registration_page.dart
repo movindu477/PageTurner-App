@@ -23,9 +23,10 @@ class RegistrationPageState extends State<RegistrationPage> {
 
       try {
         final response = await http.post(
-          Uri.parse("http://192.168.1.5/flutter_API/register.php"),
+          Uri.parse("http://192.168.170.152/flutter_API/register.php"),
           headers: {"Content-Type": "application/json"},
-          body: jsonEncode({"name": _name, "email": _email, "password": _password}),
+          body: jsonEncode(
+              {"name": _name, "email": _email, "password": _password}),
         );
 
         setState(() => _isLoading = false);
@@ -36,11 +37,11 @@ class RegistrationPageState extends State<RegistrationPage> {
           if (responseData['status'] == "success") {
             ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Registered Successfully")));
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => const LoginPage()));
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const LoginPage()));
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(responseData['message'])));
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(responseData['message'])));
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -48,7 +49,8 @@ class RegistrationPageState extends State<RegistrationPage> {
         }
       } catch (e) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     }
   }
@@ -67,7 +69,8 @@ class RegistrationPageState extends State<RegistrationPage> {
             padding: const EdgeInsets.all(16.0),
             child: Card(
               elevation: 10,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Form(
@@ -75,17 +78,25 @@ class RegistrationPageState extends State<RegistrationPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/book.png', width: 100, height: 100),
+                      Image.asset('assets/images/book.png',
+                          width: 100, height: 100),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Full Name", border: OutlineInputBorder()),
-                        validator: (value) => value!.isEmpty ? "Enter your name" : null,
+                        decoration: const InputDecoration(
+                            labelText: "Full Name",
+                            border: OutlineInputBorder()),
+                        validator: (value) =>
+                            value!.isEmpty ? "Enter your name" : null,
                         onSaved: (value) => _name = value,
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        decoration: const InputDecoration(labelText: "Email", border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                            labelText: "Email", border: OutlineInputBorder()),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) => (value!.isEmpty || !value.contains("@")) ? "Enter valid email" : null,
+                        validator: (value) =>
+                            (value!.isEmpty || !value.contains("@"))
+                                ? "Enter valid email"
+                                : null,
                         onSaved: (value) => _email = value,
                       ),
                       const SizedBox(height: 20),
@@ -94,7 +105,9 @@ class RegistrationPageState extends State<RegistrationPage> {
                           labelText: "Password",
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                            icon: Icon(_obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility),
                             onPressed: () {
                               setState(() {
                                 _obscurePassword = !_obscurePassword;
@@ -103,7 +116,9 @@ class RegistrationPageState extends State<RegistrationPage> {
                           ),
                         ),
                         obscureText: _obscurePassword,
-                        validator: (value) => (value!.length < 6) ? "Password must be 6+ chars" : null,
+                        validator: (value) => (value!.length < 6)
+                            ? "Password must be 6+ chars"
+                            : null,
                         onSaved: (value) => _password = value,
                       ),
                       Row(
@@ -128,18 +143,24 @@ class RegistrationPageState extends State<RegistrationPage> {
                             backgroundColor: Colors.deepPurple,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
                           ),
                           child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text("Register", style: TextStyle(fontSize: 18)),
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : const Text("Register",
+                                  style: TextStyle(fontSize: 18)),
                         ),
                       ),
                       const SizedBox(height: 20),
                       TextButton(
                         onPressed: () => Navigator.pushReplacement(
-                            context, MaterialPageRoute(builder: (context) => const LoginPage())),
-                        child: const Text("Already have an account? Login", style: TextStyle(color: Colors.deepPurple)),
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginPage())),
+                        child: const Text("Already have an account? Login",
+                            style: TextStyle(color: Colors.deepPurple)),
                       ),
                     ],
                   ),
