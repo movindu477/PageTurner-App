@@ -25,7 +25,7 @@ class LoginPageState extends State<LoginPage> {
 
       final response = await http.post(
         Uri.parse(
-            "http://10.0.2.2/flutter_API/login.php"), // Replace with your API URL
+            "http://localhost/flutter_API/login.php"), // Replace with your API URL
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": _email, "password": _password}),
       );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart' as file_picker;
+import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:io';
 
 class AddYourBookPage extends StatefulWidget {
   const AddYourBookPage({super.key});
@@ -12,8 +15,8 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  String? _selectedFile;
-  String? _selectedImage;
+  File? _selectedFile;
+  File? _selectedImage;
   final List<String> _selectedSections = [];
   final List<String> _sections = [
     "Romantic",
@@ -22,6 +25,7 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
     "Trending",
     "Latest"
   ];
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -30,31 +34,76 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
     super.dispose();
   }
 
-  void _pickFile() async {
-    file_picker.FilePickerResult? result =
-        await file_picker.FilePicker.platform.pickFiles();
+  Future<void> _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
     if (result != null) {
       setState(() {
-        _selectedFile = result.files.single.name;
+        _selectedFile = File(result.files.single.path!);
       });
     }
   }
 
-  void _pickImage() async {
-    file_picker.FilePickerResult? result = await file_picker.FilePicker.platform
-        .pickFiles(type: file_picker.FileType.image);
+  Future<void> _pickImage() async {
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.image);
     if (result != null) {
       setState(() {
-        _selectedImage = result.files.single.name;
+        _selectedImage = File(result.files.single.path!);
       });
     }
   }
 
-  void _publishBook() {
-    if (_formKey.currentState?.validate() ?? false) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Book Published Successfully!')),
+  Future<void> _publishBook() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      var request = http.MultipartRequest(
+        "POST",
+        Uri.parse("http://localhost/flutter_API/Book_upload.php"),
       );
+
+      // Add text fields
+      request.fields["title"] = _titleController.text;
+      request.fields["description"] = _descriptionController.text;
+      request.fields["sections"] = jsonEncode(_selectedSections);
+
+      // Add file if selected
+      if (_selectedFile != null) {
+        request.files.add(
+            await http.MultipartFile.fromPath('file', _selectedFile!.path));
+      }
+
+      // Add image if selected
+      if (_selectedImage != null) {
+        request.files.add(
+            await http.MultipartFile.fromPath('image', _selectedImage!.path));
+      }
+
+      // Send request
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      print(responseData); // Debugging: Log the server response
+
+      // Decode response
+      final jsonResponse = jsonDecode(responseData);
+      if (jsonResponse['status'] == "success") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Book Published Successfully!")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(jsonResponse['message'])),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -87,14 +136,12 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                     child: _selectedImage == null
                         ? const Text("Tap to upload an image",
                             style: TextStyle(color: Colors.black54))
-                        : Text(_selectedImage!,
+                        : Text("Selected Image",
                             style: const TextStyle(color: Colors.black87)),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text("Section",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Wrap(
                 spacing: 8.0,
                 children: _sections.map((section) {
@@ -119,8 +166,6 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                 }).toList(),
               ),
               const SizedBox(height: 16),
-              const Text("Book Title",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(
@@ -132,8 +177,6 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                     : null,
               ),
               const SizedBox(height: 16),
-              const Text("Description",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 4,
@@ -162,7 +205,8 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
               if (_selectedFile != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: Text("Selected file: $_selectedFile",
+                  child: Text(
+                      "Selected file: ${_selectedFile!.path.split('/').last}",
                       style:
                           const TextStyle(fontSize: 14, color: Colors.black87)),
                 ),
@@ -170,13 +214,15 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _publishBook,
+                  onPressed: _isLoading ? null : _publishBook,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurpleAccent,
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
-                  child: const Text("Publish",
-                      style: TextStyle(fontSize: 16, color: Colors.white)),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("Publish",
+                          style: TextStyle(fontSize: 16, color: Colors.white)),
                 ),
               ),
             ],
