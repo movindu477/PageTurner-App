@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:page_turner_app/book_detail_page.dart';
-import 'login_page.dart'; // Assuming the login page is in the same directory
-import 'addyourbook_page.dart';// Assuming the Add Your Book page is in the same directory
+import 'book_detail_page.dart';
+import 'login_page.dart';
+import 'addyourbook_page.dart';
 
 // Moved CustomSearchDelegate to top-level (outside of _DashboardPageState)
 class CustomSearchDelegate extends SearchDelegate<String> {
@@ -149,7 +149,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding: const EdgeInsets.all(10),
                   child: Card(
                     child: ListTile(
-                      leading: Image.asset("assets/images/book11.jpg", width: 60),
+                      leading:
+                          Image.asset("assets/images/book11.jpg", width: 60),
                       title: const Text("The Way of the Nameless"),
                       subtitle: const Text("65.8K readers"),
                       trailing: ElevatedButton(
@@ -177,7 +178,8 @@ class _DashboardPageState extends State<DashboardPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ListTile(
-                          leading: Image.asset("assets/images/book12.jpg", width: 60),
+                          leading: Image.asset("assets/images/book12.jpg",
+                              width: 60),
                           title: const Text("To Kill a Mockingbird"),
                           subtitle: const Text("60.8K downloads"),
                         ),
@@ -218,12 +220,14 @@ class _DashboardPageState extends State<DashboardPage> {
                       // Profile
                       const CircleAvatar(
                         radius: 40,
-                        backgroundImage: AssetImage('assets/images/profile.jpg'),
+                        backgroundImage:
+                            AssetImage('assets/images/profile.jpg'),
                       ),
                       const SizedBox(height: 10),
                       const Text(
                         "John Doe", // Replace with dynamic name
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const Text(
                         "john.doe@example.com", // Replace with dynamic email
@@ -235,10 +239,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       IconButton(
                         icon: const Icon(Icons.add),
                         onPressed: () {
-                          // Navigate to a new page when the plus icon is clicked
+                          // Navigate to Add Your Book page (Fix here)
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const DashboardPage()),
+                            MaterialPageRoute(
+                              builder: (context) => const AddYourBookPage(),
+                            ),
                           );
                         },
                       ),
@@ -271,7 +277,8 @@ class _DashboardPageState extends State<DashboardPage> {
               // Navigate to Add Your Book page
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AddYourBookPage()),
+                MaterialPageRoute(
+                    builder: (context) => const AddYourBookPage()),
               );
             },
             child: const Icon(Icons.edit),
@@ -299,7 +306,9 @@ class _DashboardPageState extends State<DashboardPage> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: books.map((book) => bookItem(book['image']!, book['title']!)).toList(),
+          children: books
+              .map((book) => bookItem(book['image']!, book['title']!))
+              .toList(),
         ),
       ),
     );
@@ -312,7 +321,8 @@ class _DashboardPageState extends State<DashboardPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BookDetailPage(bookImage: imgPath, bookTitle: title),
+            builder: (context) =>
+                BookDetailPage(bookImage: imgPath, bookTitle: title),
           ),
         );
       },

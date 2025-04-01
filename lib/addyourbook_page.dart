@@ -52,11 +52,6 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
 
   void _publishBook() {
     if (_formKey.currentState?.validate() ?? false) {
-      print('Title: ${_titleController.text}');
-      print('Description: ${_descriptionController.text}');
-      print('Sections: ${_selectedSections.join(", ")}');
-      print('Selected File: $_selectedFile');
-      print('Selected Image: $_selectedImage');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Book Published Successfully!')),
       );
@@ -67,13 +62,11 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Add Your Book",
-          style: TextStyle(color: Colors.white), // Changed text color
-        ),
+        title:
+            const Text("Add Your Book", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurpleAccent,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -95,7 +88,7 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                         ? const Text("Tap to upload an image",
                             style: TextStyle(color: Colors.black54))
                         : Text(_selectedImage!,
-                            style: TextStyle(color: Colors.black87)),
+                            style: const TextStyle(color: Colors.black87)),
                   ),
                 ),
               ),
@@ -103,6 +96,7 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
               const Text("Section",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Wrap(
+                spacing: 8.0,
                 children: _sections.map((section) {
                   return Row(
                     mainAxisSize: MainAxisSize.min,
@@ -124,12 +118,6 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                   );
                 }).toList(),
               ),
-              if (_selectedSections.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text("Selected: ${_selectedSections.join(", ")}",
-                      style: TextStyle(fontSize: 14, color: Colors.black87)),
-                ),
               const SizedBox(height: 16),
               const Text("Book Title",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -139,12 +127,9 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                   border: OutlineInputBorder(),
                   hintText: 'Enter the book title',
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the book title';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter the book title'
+                    : null,
               ),
               const SizedBox(height: 16),
               const Text("Description",
@@ -156,12 +141,9 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                   border: OutlineInputBorder(),
                   hintText: 'Enter a short description of the book',
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the description';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter the description'
+                    : null,
               ),
               const SizedBox(height: 16),
               GestureDetector(
@@ -181,13 +163,12 @@ class _AddYourBookPageState extends State<AddYourBookPage> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text("Selected file: $_selectedFile",
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: const Color.fromARGB(255, 255, 255, 255))),
+                      style:
+                          const TextStyle(fontSize: 14, color: Colors.black87)),
                 ),
               const SizedBox(height: 20),
               SizedBox(
-                width: double.infinity, // Increase button width
+                width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _publishBook,
                   style: ElevatedButton.styleFrom(

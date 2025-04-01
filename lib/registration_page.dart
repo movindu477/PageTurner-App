@@ -23,7 +23,7 @@ class RegistrationPageState extends State<RegistrationPage> {
 
       try {
         final response = await http.post(
-          Uri.parse("http://localhost/flutter_API/register.php"),
+          Uri.parse("http://10.0.2.2/flutter_API/register.php"),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(
               {"name": _name, "email": _email, "password": _password}),

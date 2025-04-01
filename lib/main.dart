@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
-import 'registration_page.dart'; // Import the registration page
+import 'package:provider/provider.dart';
+import 'book_state.dart'; // Make sure this import is correct
+import 'registration_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => BookState(), // Initialize your BookState
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -45,15 +52,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Colors.deepPurple, // Background color of the splash screen
+      backgroundColor: Colors.deepPurple,
       body: Center(
         child: ClipRRect(
-          borderRadius:
-              BorderRadius.circular(10), // Adjust the radius as needed
+          borderRadius: BorderRadius.circular(10),
           child: Image.asset(
-            'assets/images/book.png', // Path to your image
-            width: 150, // Adjust the size as needed
+            'assets/images/book.png',
+            width: 150,
             height: 150,
           ),
         ),
